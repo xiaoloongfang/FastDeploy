@@ -60,7 +60,7 @@ Linux上编译需满足:
 ### 3.2 编译FastDeploy C++ SDK  
 ```bash
 # 源码编译SDK
-git clone https://github.com/PaddlePaddle/FastDeploy.git -b develop
+git clone https://github.com/PaddlePaddle/FastDeploy.git -b paddlex
 cd FastDeploy
 mkdir build && cd build
 cmake .. -DWITH_GPU=ON \
