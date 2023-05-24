@@ -184,7 +184,7 @@ FastDeploy除了提供包含模型前后处理在内的benchmark_xxx外，也提
 benchmark: ./benchmark -[info|diff|check|dump|mem] -model xxx -config_path xxx -[shapes|dtypes|names|tensors] -[model_file|params_file|model_format]
 ...
 ```
-```
+
 - 单输入示例：--model，指定模型文件夹，其中包括*.pdmodel/pdiparams文件
 ```bash
 ./benchmark --model ResNet50_vd_infer --config_path config/config.x86.ov.fp32.txt --shapes 1,3,224,224 --names inputs --dtypes FP32
