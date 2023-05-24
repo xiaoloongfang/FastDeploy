@@ -90,24 +90,43 @@ cmake .. -DFASTDEPLOY_INSTALL_DIR=${FD_GPU_SDK}
 make -j4
 ```
 
+注：如果需要指定特定的Paddle Inference包，可以通过 -DPADDLEINFERENCE_URL 或 -DPADDLEINFERENCE_DIRECTORY 指定。如：
+
+```bash
+cmake .. -DWITH_GPU=ON \
+         -DENABLE_ORT_BACKEND=ON \
+         -DENABLE_PADDLE_BACKEND=ON \
+         -DENABLE_OPENVINO_BACKEND=ON \
+         -DENABLE_TRT_BACKEND=ON \
+         -DENABLE_VISION=ON \
+         -DENABLE_TEXT=ON \
+         -DENABLE_BENCHMARK=ON \  # 开启benchmark模式
+         -DTRT_DIRECTORY=/Paddle/TensorRT-8.5.2.2 \
+         -DCUDA_DIRECTORY=/usr/local/cuda \
+         -DPADDLEINFERENCE_DIRECTORY=/path/to/your/paddle_inference \ # 自定义本地paddle inference库
+         -DCMAKE_INSTALL_PREFIX=${PWD}/compiled_fastdeploy_sdk
+
+```
+
 ### 3.4 运行 Benchmark 示例  
 
-在X86 CPU + NVIDIA GPU下，FastDeploy 目前支持多种推理后端，下面以 PaddleYOLOv8 为例，跑出多后端在 CPU/GPU 对应 benchmark 数据。
+在X86 CPU + NVIDIA GPU下，FastDeploy 目前支持多种推理后端，下面以 MobileNetV3 为例，跑出多后端在 CPU/GPU 对应 benchmark 数据。
 
 - 下载模型文件和测试图片  
 ```bash  
-wget https://bj.bcebos.com/paddlehub/fastdeploy/yolov8_s_500e_coco.tgz  
-wget https://gitee.com/paddlepaddle/PaddleDetection/raw/release/2.4/demo/000000014439.jpg
-tar -zxvf yolov8_s_500e_coco.tgz
+wget https://bj.bcebos.com/paddlehub/fastdeploy_paddlex_2_0/MobileNetV3_small_x1_0.tgz
+wget https://bj.bcebos.com/paddlehub/fastdeploy_paddlex_2_0/ppcls_cls_demo.JPEG
+tar -zxvf MobileNetV3_small_x1_0.tgz
 ```
 
-- 运行 yolov8 benchmark 示例  
+- 运行 benchmark 示例  
 
 ```bash  
 
 # 统计性能，用户根据需求修改config.txt文件，具体含义参考上表
 # eg：如果想测paddle gpu backend，将device改为gpu，backend修改为paddle即可
-./benchmark_ppyolov8 --model yolov8_s_500e_coco --image 000000014439.jpg --config_path config.txt
+```bash
+./benchmark_ppcls --model MobileNetV3_small_x1_0 --image ppcls_cls_demo.JPEG --config_path config.x86.paddle.fp32.txt
 ```
 注意，为避免对性能统计产生影响，测试性能时，最好不要开启内存显存统计的功能，当把collect_memory_info参数设置为true时，只有内存显存参数是稳定可靠的。更多参数设置，请参考[参数设置说明](#参数设置说明)
 
@@ -138,13 +157,6 @@ tar -zxvf yolov8_s_500e_coco.tgz
 ./benchmark_gpu_trt.sh config/config.gpu.trt.fp32.txt
 # NVIDIA GPU TRT backend fp16
 ./benchmark_gpu_trt.sh config/config.gpu.trt.fp16.txt
-
-# Arm CPU Paddle Lite backend fp32
-./benchmark_arm.sh config/config.arm.lite.fp32.txt
-# Arm CPU Paddle Lite backend fp16
-./benchmark_arm.sh config/config.arm.lite.fp16.txt
-# XPU Paddle Lite backend fp32
-./benchmark_xpu.sh config/config.xpu.lite.fp32.txt
 ```
 
 ## 5. Benchmark工具用法  
