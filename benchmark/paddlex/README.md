@@ -122,10 +122,8 @@ tar -zxvf MobileNetV3_small_x1_0.tgz
 - 运行 benchmark 示例  
 
 ```bash  
-
 # 统计性能，用户根据需求修改config.txt文件，具体含义参考上表
 # eg：如果想测paddle gpu backend，将device改为gpu，backend修改为paddle即可
-```bash
 ./benchmark_ppcls --model MobileNetV3_small_x1_0 --image ppcls_cls_demo.JPEG --config_path config.x86.paddle.fp32.txt
 ```
 注意，为避免对性能统计产生影响，测试性能时，最好不要开启内存显存统计的功能，当把collect_memory_info参数设置为true时，只有内存显存参数是稳定可靠的。更多参数设置，请参考[参数设置说明](#参数设置说明)
