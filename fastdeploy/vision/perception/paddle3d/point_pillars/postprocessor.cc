@@ -12,17 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "fastdeploy/pybind/main.h"
+#include "fastdeploy/vision/perception/paddle3d/point_pillars/postprocessor.h"
+
+#include "fastdeploy/vision/utils/utils.h"
 
 namespace fastdeploy {
+namespace vision {
+namespace perception {
 
-void BindSmoke(pybind11::module& m);
-void BindPetr(pybind11::module& m);
-void BindPointPillars(pybind11::module& m);
+PointPillarPostprocessor::PointPillarsPostprocessor() {}
 
-void BindPerception(pybind11::module& m) {
-  auto perception_module =
-      m.def_submodule("perception", "3D object perception models.");
-  BindSmoke(perception_module);
+bool PointPillarPostprocessor::Run(const std::vector<FDTensor>& tensors,
+                             std::vector<PerceptionResult>* results) {
+  // TODO: PointPillar Postprocessor need to be implemented.
+  return true;
 }
+
+}  // namespace perception
+}  // namespace vision
 }  // namespace fastdeploy
