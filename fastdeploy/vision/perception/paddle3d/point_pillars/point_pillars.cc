@@ -18,10 +18,8 @@ namespace fastdeploy {
 namespace vision {
 namespace perception {
 
-PointPillar::PointPillar(const std::string& model_file, const std::string& params_file,
-             const std::string& config_file, const RuntimeOption& custom_option,
-             const ModelFormat& model_format)
-    : preprocessor_(config_file) {
+PointPillars::PointPillars(const std::string& model_file, const std::string& params_file,
+            const RuntimeOption& custom_option, const ModelFormat& model_format){
   valid_cpu_backends = {Backend::PDINFER};
   valid_gpu_backends = {Backend::PDINFER};
 
@@ -32,7 +30,7 @@ PointPillar::PointPillar(const std::string& model_file, const std::string& param
   initialized = Initialize();
 }
 
-bool PointPillar::Initialize() {
+bool PointPillars::Initialize() {
   if (!InitRuntime()) {
     FDERROR << "Failed to initialize fastdeploy backend." << std::endl;
     return false;
@@ -42,13 +40,16 @@ bool PointPillar::Initialize() {
 
 // Todo : The definition of Predict should be modified to 
 // Predict(const FDTensor& voxels, const FDTensor& coords, const FDTensor& num_points_per_voxel, PerceptionResult* result)
-// bool PointPillar::Predict(const cv::Mat& im, PerceptionResult* result) {
-bool PointPillar::Predict(const FDTensor& voxels, 
-                          const FDTensor& coords, 
-                          const FDTensor& num_points_per_voxel, 
+// bool PointPillars::Predict(const cv::Mat& im, PerceptionResult* result) {
+bool PointPillars::Predict(FDTensor& voxels, 
+                          FDTensor& coords, 
+                          FDTensor& num_points_per_voxel, 
                           PerceptionResult* result){
   std::vector<PerceptionResult> results;
-  if (!BatchPredict({voxels}, {coords}, {num_points_per_voxel}, &results)) {
+  voxels.ExpandDim();
+  coords.ExpandDim();
+  num_points_per_voxel.ExpandDim();
+  if (!BatchPredict(voxels, coords, num_points_per_voxel, &results)) {
     return false;
   }
   if (results.size()) {
@@ -58,16 +59,15 @@ bool PointPillar::Predict(const FDTensor& voxels,
 }
 
 // Todo : The definition of BatchPredict should modified according to Predict function.
-// bool PointPillar::BatchPredict(const std::vector<cv::Mat>& images,
+// bool PointPillars::BatchPredict(const std::vector<cv::Mat>& images,
 //                          std::vector<PerceptionResult>* results) {
-bool PointPillar::BatchPredict(const std::vector<FDTensor>& voxels_batch,
-                              const std::vector<FDTensor>& coords_batch,
-                              const std::vector<FDTensor>& num_points_per_voxel_batch,
+bool PointPillars::BatchPredict(FDTensor& voxels_batch, FDTensor& coords_batch,
+                              FDTensor& num_points_per_voxel_batch, 
                               std::vector<PerceptionResult>* results) {
 
-  if (!preprocessor_.Run(&voxels_batch, 
-                        &coords_batch, 
-                        &num_points_per_voxel_batch, 
+  if (!preprocessor_.Run(voxels_batch, 
+                        coords_batch, 
+                        num_points_per_voxel_batch, 
                         &reused_input_tensors_)) {
     FDERROR << "Failed to preprocess the input tensor." << std::endl;
     return false;

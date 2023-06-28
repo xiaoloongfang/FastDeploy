@@ -18,15 +18,11 @@ namespace fastdeploy {
 void BindPointPillars(pybind11::module& m) {
   pybind11::class_<vision::perception::PointPillarsPreprocessor,
                    vision::ProcessorManager>(m, "PointPillarsPreprocessor")
-      .def(pybind11::init<std::string>())
+      .def(pybind11::init<>())
       .def("run", [](vision::perception::PointPillarsPreprocessor& self,
-                     std::vector<pybind11::array>& im_list) {
-        std::vector<vision::FDMat> images;
-        for (size_t i = 0; i < im_list.size(); ++i) {
-          images.push_back(vision::WrapMat(PyArrayToCvMat(im_list[i])));
-        }
+                     FDTensor& voxels, FDTensor& coords, FDTensor& num_points_per_voxel) {
         std::vector<FDTensor> outputs;
-        if (!self.Run(&images, &outputs)) {
+        if (!self.Run(voxels, coords, num_points_per_voxel, &outputs)) {
           throw std::runtime_error(
               "Failed to preprocess the input data in PointPillarsPreprocessor.");
         }
@@ -37,7 +33,7 @@ void BindPointPillars(pybind11::module& m) {
       });
 
   pybind11::class_<vision::perception::PointPillarsPostprocessor>(m,
-                                                           "PointPillarsPostprocessor")
+                                                                  "PointPillarsPostprocessor")
       .def(pybind11::init<>())
       .def("run",
            [](vision::perception::PointPillarsPostprocessor& self,
@@ -49,44 +45,28 @@ void BindPointPillars(pybind11::module& m) {
                    "PointPillarsPostprocessor.");
              }
              return results;
-           })
-      .def("run", [](vision::perception::PointPillarsPostprocessor& self,
-                     std::vector<pybind11::array>& input_array) {
-        std::vector<vision::PerceptionResult> results;
-        std::vector<FDTensor> inputs;
-        PyArrayToTensorList(input_array, &inputs, /*share_buffer=*/true);
-        if (!self.Run(inputs, &results)) {
-          throw std::runtime_error(
-              "Failed to postprocess the runtime result in "
-              "PointPillarsPostprocessor.");
-        }
-        return results;
-      });
+           });
 
-  pybind11::class_<vision::perception::PointPillar, FastDeployModel>(m, "PointPillar")
-      .def(pybind11::init<std::string, std::string, std::string, RuntimeOption,
-                          ModelFormat>())
+  pybind11::class_<vision::perception::PointPillars, FastDeployModel>(m, "PointPillars")
+      .def(pybind11::init<std::string, std::string, RuntimeOption, ModelFormat>())
       .def("predict",
-           [](vision::perception::PointPillar& self, pybind11::array& data) {
-             auto mat = PyArrayToCvMat(data);
+           [](vision::perception::PointPillars& self, 
+              FDTensor& voxels, FDTensor& coords, FDTensor& num_points_per_voxel) {
              vision::PerceptionResult res;
-             self.Predict(mat, &res);
+             self.Predict(voxels, coords, num_points_per_voxel, &res);
              return res;
            })
       .def("batch_predict",
-           [](vision::perception::PointPillar& self,
-              std::vector<pybind11::array>& data) {
-             std::vector<cv::Mat> images;
-             for (size_t i = 0; i < data.size(); ++i) {
-               images.push_back(PyArrayToCvMat(data[i]));
-             }
+           [](vision::perception::PointPillars& self,
+              FDTensor& voxels_batch, FDTensor& coords_batch,
+              FDTensor& num_points_per_voxel_batch) {
              std::vector<vision::PerceptionResult> results;
-             self.BatchPredict(images, &results);
+             self.BatchPredict(voxels_batch, coords_batch, num_points_per_voxel_batch, &results);
              return results;
            })
       .def_property_readonly("preprocessor",
-                             &vision::perception::PointPillar::GetPreprocessor)
+                             &vision::perception::PointPillars::GetPreprocessor)
       .def_property_readonly("postprocessor",
-                             &vision::perception::PointPillar::GetPostprocessor);
+                             &vision::perception::PointPillars::GetPostprocessor);
 }
 }  // namespace fastdeploy

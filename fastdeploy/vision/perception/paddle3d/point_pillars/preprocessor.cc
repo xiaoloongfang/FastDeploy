@@ -21,39 +21,39 @@ namespace fastdeploy {
 namespace vision {
 namespace perception {
 
-PointPillarsPreprocessor::PointPillarsPreprocessor(const std::string& config_file) {
-  config_file_ = config_file;
-  FDASSERT(BuildPreprocessPipelineFromConfig(),
-           "Failed to create Paddle3DDetPreprocessor.");
+PointPillarsPreprocessor::PointPillarsPreprocessor() {
   initialized_ = true;
-}
-
-bool PointPillarsPreprocessor::BuildPreprocessPipelineFromConfig() {
-  // TODO: PointPillar Preprocessor need to be implemented.
-  return true;
 }
 
 // TODO : The definition of Apply function will be modified to be  
 // Apply(FDTensor* voxels_batch, FDTensor* coords_batch, 
 // FDTensor* num_points_per_voxel_batch, std::vector<FDTensor>* outputs)
-bool PointPillarsPreprocessor::Apply(FDTensor* voxels_batch, 
-                              FDTensor* coords_batch, 
-                              FDTensor* num_points_per_voxel_batch,
+bool PointPillarsPreprocessor::Apply(FDTensor& voxels_batch, 
+                              FDTensor& coords_batch, 
+                              FDTensor& num_points_per_voxel_batch,
                               std::vector<FDTensor>* outputs) {
   // TODO: PointPillar Preprocessor need to be implemented.
+  outputs->resize(3);
+
+  (*outputs)[0] = voxels_batch;
+  (*outputs)[1] = num_points_per_voxel_batch;
+  (*outputs)[2] = coords_batch;
+  return true;
+}
+
+bool Apply(FDMatBatch* image_batch, std::vector<FDTensor>* outputs){
   return true;
 }
 
 // function Run will invoke Apply function.
-bool ProcessorManager::Run(const std::vector<FDTensor>& voxels_batch,
-                          const std::vector<FDTensor>& coords_batch,
-                          const std::vector<FDTensor>& num_points_per_voxel_batch,
-                          std::vector<FDTensor>* outputs) {
+bool PointPillarsPreprocessor::Run(FDTensor& voxels_batch, FDTensor& coords_batch,
+                                  FDTensor& num_points_per_voxel_batch, 
+                                  std::vector<FDTensor>* outputs) {
   //TODO : PreApply needs to be implemented
-  PreApply(&image_batch);
-  bool ret = Apply(&voxels_batch, 
-                  &coords_batch, 
-                  &num_points_per_voxel_batch, 
+  // PreApply(&image_batch);
+  bool ret = Apply(voxels_batch, 
+                  coords_batch, 
+                  num_points_per_voxel_batch, 
                   outputs);
   PostApply();
   return ret;

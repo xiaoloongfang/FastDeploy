@@ -25,12 +25,7 @@ namespace perception {
  */
 class FASTDEPLOY_DECL PointPillarsPreprocessor : public ProcessorManager  {
  public:
-  PointPillarsPreprocessor() = default;
-  /** \brief Create a preprocessor instance for Smoke model
-   *
-   * \param[in] config_file Path of configuration file for deployment, e.g smoke/infer_cfg.yml
-   */
-  explicit PointPillarsPreprocessor(const std::string& config_file);
+  PointPillarsPreprocessor();
 
   /** \brief Process the input image and prepare input tensors for runtime
    *
@@ -39,18 +34,16 @@ class FASTDEPLOY_DECL PointPillarsPreprocessor : public ProcessorManager  {
    * \param[in] ims_info The shape info list, record input_shape and output_shape
    * \return true if the preprocess successed, otherwise false
    */
-  bool Apply(FDTensor* voxels_batch, 
-            FDTensor* coords_batch, 
-            FDTensor* num_points_per_voxel_batch,
-            std::vector<FDTensor>* outputs);
+  bool Apply(FDTensor& voxels_batch, FDTensor& coords_batch, 
+              FDTensor& num_points_per_voxel_batch,
+              std::vector<FDTensor>* outputs);
+
+  bool Apply(FDMatBatch* image_batch, std::vector<FDTensor>* outputs);
   
-  bool Run(const std::vector<FDTensor>& voxels_batch,
-                          const std::vector<FDTensor>& coords_batch,
-                          const std::vector<FDTensor>& num_points_per_voxel_batch,
-                          std::vector<FDTensor>* outputs);
+  bool Run(FDTensor& voxels_batch, FDTensor& coords_batch,
+          FDTensor& num_points_per_voxel_batch, std::vector<FDTensor>* outputs);
 
  protected:
-  bool BuildPreprocessPipelineFromConfig();
   std::vector<std::shared_ptr<Processor>> processors_;
 
   bool disable_permute_ = false;

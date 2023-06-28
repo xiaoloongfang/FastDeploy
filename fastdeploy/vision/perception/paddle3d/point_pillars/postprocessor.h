@@ -22,11 +22,11 @@ namespace vision {
 namespace perception {
 /*! @brief Postprocessor object for Smoke serials model.
  */
-class FASTDEPLOY_DECL PointPillarPostprocessor {
+class FASTDEPLOY_DECL PointPillarsPostprocessor {
  public:
   /** \brief Create a postprocessor instance for Smoke serials model
    */
-  PointPillarPostprocessor();
+  PointPillarsPostprocessor();
 
   /** \brief Process the result of runtime and fill to PerceptionResult structure
    *

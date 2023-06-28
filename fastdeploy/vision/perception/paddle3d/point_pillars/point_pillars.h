@@ -21,23 +21,22 @@
 namespace fastdeploy {
 namespace vision {
 namespace perception {
-/*! @brief PointPillar model object used when to load a PointPillar model exported by PointPillar.
+/*! @brief PointPillars model object used when to load a PointPillars model exported by PointPillar.
  */
-class FASTDEPLOY_DECL PointPillar : public FastDeployModel {
+class FASTDEPLOY_DECL PointPillars : public FastDeployModel {
  public:
   /** \brief  Set path of model file and the configuration of runtime.
    *
-   * \param[in] model_file Path of model file, e.g PointPillar/model.pdiparams
-   * \param[in] params_file Path of parameter file, e.g PointPillar/model.pdiparams, if the model format is ONNX, this parameter will be ignored
+   * \param[in] model_file Path of model file, e.g PointPillars/model.pdiparams
+   * \param[in] params_file Path of parameter file, e.g PointPillars/model.pdiparams, if the model format is ONNX, this parameter will be ignored
    * \param[in] custom_option RuntimeOption for inference, the default will use cpu, and choose the backend defined in "valid_cpu_backends"
    * \param[in] model_format Model format of the loaded model, default is Paddle format
    */
-  PointPillar(const std::string& model_file, const std::string& params_file,
-         const std::string& config_file,
+  PointPillars(const std::string& model_file, const std::string& params_file,
          const RuntimeOption& custom_option = RuntimeOption(),
          const ModelFormat& model_format = ModelFormat::PADDLE);
 
-  std::string ModelName() const { return "Paddle3D/PointPillar"; }
+  std::string ModelName() const { return "Paddle3D/PointPillars"; }
 
   // TODO: comment needs to be modified.
   /** \brief Predict the perception result for an input image
@@ -47,9 +46,9 @@ class FASTDEPLOY_DECL PointPillar : public FastDeployModel {
    * \return true if the prediction successed, otherwise false
    */
   // virtual bool Predict(const cv::Mat& img, PerceptionResult* result);
-  virtual bool Predict(const FDTensor& voxels, 
-                      const FDTensor& coords, 
-                      const FDTensor& num_points_per_voxel, 
+  virtual bool Predict(FDTensor& voxels, 
+                      FDTensor& coords, 
+                      FDTensor& num_points_per_voxel, 
                       PerceptionResult* result);
 
   /** \brief Predict the perception results for a batch of input images
@@ -58,25 +57,24 @@ class FASTDEPLOY_DECL PointPillar : public FastDeployModel {
    * \param[in] results The output perception result list
    * \return true if the prediction successed, otherwise false
    */
-  virtual bool BatchPredict(const std::vector<FDTensor>& voxels_batch,
-                              const std::vector<FDTensor>& coords_batch,
-                              const std::vector<FDTensor>& num_points_per_voxel_batch,
-                              std::vector<PerceptionResult>* results);
+  virtual bool BatchPredict(FDTensor& voxels_batch, FDTensor& coords_batch,
+                            FDTensor& num_points_per_voxel_batch, 
+                            std::vector<PerceptionResult>* results);
 
-  /// Get preprocessor reference of PointPillar
-  virtual PointPillarPreprocessor& GetPreprocessor() {
+  /// Get preprocessor reference of PointPillars
+  virtual PointPillarsPreprocessor& GetPreprocessor() {
     return preprocessor_;
   }
 
-  /// Get postprocessor reference of PointPillar
-  virtual PointPillarPostprocessor& GetPostprocessor() {
+  /// Get postprocessor reference of PointPillars
+  virtual PointPillarsPostprocessor& GetPostprocessor() {
     return postprocessor_;
   }
 
  protected:
   bool Initialize();
-  PointPillarPreprocessor preprocessor_;
-  PointPillarPostprocessor postprocessor_;
+  PointPillarsPreprocessor preprocessor_;
+  PointPillarsPostprocessor postprocessor_;
   bool initialized_ = false;
 };
 
